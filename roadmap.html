@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aeye — Roadmap</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 40'><ellipse cx='40' cy='20' rx='36' ry='18' fill='none' stroke='%2300e5a0' stroke-width='2'/><circle cx='40' cy='20' r='10' fill='%2300e5a0'/><circle cx='40' cy='20' r='4' fill='%23000'/></svg>">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+    background: #050a08;
+    color: #c0d8cc;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,229,160,0.015) 2px, rgba(0,229,160,0.015) 4px
+    );
+    z-index: 100;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeDown 0.8s ease both;
+  }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .brand {
+    font-size: 11px;
+    letter-spacing: 8px;
+    color: #00e5a0;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .main-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #e0fff0;
+    margin: 8px 0 4px;
+    letter-spacing: 2px;
+  }
+  .main-subtitle {
+    font-size: 12px;
+    color: #4a7a60;
+    letter-spacing: 3px;
+  }
+
+  /* Eye */
+  .eye-wrap { display: flex; justify-content: center; margin: 0 0 16px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #0f2a1a;
+  }
+  /* Tab system - pure CSS */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #0f2a1a;
+    position: relative;
+  }
+  input[name="tab"] { display: none; }
+  .tab-label {
+    padding: 14px 24px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: #2a5a40;
+    border-bottom: 2px solid transparent;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .tab-label:hover { color: #00e5a0; }
+
+  /* Active tab label styling */
+  #tab-radio-about:checked ~ .tabs .tab-label[for="tab-radio-about"],
+  #tab-radio-roadmap:checked ~ .tabs .tab-label[for="tab-radio-roadmap"],
+  #tab-radio-cultist:checked ~ .tabs .tab-label[for="tab-radio-cultist"] {
+    color: #00e5a0;
+    border-bottom-color: #00e5a0;
+  }
+
+  /* Tab content visibility */
+  .tab-content { display: none; }
+  #tab-radio-about:checked ~ .wrap-inner #tab-about,
+  #tab-radio-roadmap:checked ~ .wrap-inner #tab-roadmap,
+  #tab-radio-cultist:checked ~ .wrap-inner #tab-cultist {
+    display: block;
+  }
+
+  /* Phase cards */
+  .phase-card {
+    position: relative;
+    padding: 28px 28px 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+  .phase-card.status-active {
+    background: linear-gradient(135deg, #0a1a12 0%, #0d2218 100%);
+    border: 1px solid #00e5a044;
+  }
+  .phase-card.status-upcoming {
+    background: linear-gradient(135deg, #090f0c 0%, #0b1810 100%);
+    border: 1px solid #152a1e;
+  }
+  .phase-card.status-locked {
+    background: linear-gradient(135deg, #080f0b 0%, #0a1510 100%);
+    border: 1px solid #1a2a22;
+    opacity: 0.55;
+  }
+  .phase-card:not(.status-locked):hover {
+    transform: translateX(4px);
+  }
+
+  .status-pill {
+    position: absolute;
+    top: 16px; right: 16px;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+  .status-active .status-pill {
+    background: #00e5a015; color: #00e5a0; border: 1px solid #00e5a033;
+  }
+  .status-upcoming .status-pill {
+    background: #00e5a008; color: #4a8a68; border: 1px solid #1a3a28;
+  }
+  .status-locked .status-pill {
+    background: #ffffff05; color: #1f3a2a; border: 1px solid #1a2a20;
+  }
+
+  .phase-label {
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: #3a6a50;
+    margin-bottom: 6px;
+  }
+  .phase-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .status-active .phase-title { color: #00e5a0; }
+  .status-upcoming .phase-title { color: #a0d8bb; }
+  .status-locked .phase-title { color: #1f3a2a; }
+
+  .phase-icon { font-size: 14px; color: #2a4a38; }
+  .status-active .phase-icon {
+    color: #00e5a0;
+    filter: drop-shadow(0 0 6px #00e5a0);
+  }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .status-active .item, .status-upcoming .item { color: #7aaa90; }
+  .status-locked .item { color: #15291e; }
+
+  .bullet {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    border: 1.5px solid #3a6a50;
+    background: transparent;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .status-locked .bullet { border-color: #15291e; }
+
+  .lock-badge {
+    margin-top: 14px;
+    padding: 8px 14px;
+    background: #0a1a12;
+    border: 1px dashed #1a3a28;
+    border-radius: 3px;
+    font-size: 11px;
+    color: #3a6a50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 1px;
+  }
+
+  .connector {
+    width: 1px; height: 20px;
+    background: linear-gradient(to bottom, #00e5a033, #00e5a00a);
+    margin: 0 auto;
+  }
+
+  /* Evolution */
+  .evolution {
+    margin-top: 40px;
+    padding: 28px;
+    background: linear-gradient(135deg, #0a1510 0%, #080f0b 100%);
+    border: 1px solid #152a1e;
+    border-radius: 4px;
+  }
+  .evolution-title {
+    font-size: 14px; font-weight: 700;
+    color: #00e5a0;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .evolution-text {
+    font-size: 13px; color: #6a9a80; line-height: 1.8;
+  }
+
+  .section-footer {
+    margin-top: 48px;
+    text-align: center;
+    font-size: 11px;
+    color: #1f3a2a;
+    letter-spacing: 2px;
+  }
+
+  /* Milestone cards */
+  .milestone-card {
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border-left-width: 3px;
+    border-left-style: solid;
+  }
+  .milestone-cap {
+    font-size: 28px; font-weight: 700; margin-bottom: 4px;
+  }
+  .milestone-cap span {
+    font-size: 11px; color: #4a7a60; font-weight: 400;
+    margin-left: 8px; letter-spacing: 2px;
+  }
+  .milestone-label {
+    font-size: 13px; color: #a0d8bb; font-weight: 600; margin-bottom: 10px;
+  }
+  .milestone-desc {
+    font-size: 12px; color: #5a8a70; line-height: 1.7;
+  }
+
+  /* How it works */
+  .how-it-works {
+    margin-top: 24px;
+    padding: 20px 24px;
+    background: #060d09;
+    border: 1px solid #0f2a1a;
+    border-radius: 4px;
+  }
+  .how-title {
+    font-size: 11px; letter-spacing: 4px; color: #3a6a50;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .how-step {
+    font-size: 12px; color: #5a8a70; line-height: 1.8; padding: 4px 0;
+  }
+  .step-num {
+    display: inline-block;
+    width: 18px; height: 18px; line-height: 18px;
+    text-align: center; font-size: 10px;
+    border: 1px solid #2a4a38; border-radius: 2px;
+    color: #00e5a0; margin-right: 10px; font-weight: 700;
+  }
+
+  .note-box {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: #060d09;
+    border: 1px solid rgba(0,229,160,0.06);
+    border-radius: 4px;
+    text-align: center;
+    font-size: 12px;
+    color: #3a6a50;
+    line-height: 1.7;
+    letter-spacing: 0.5px;
+  }
+
+  /* About tab */
+  .about-hero {
+    text-align: center;
+    padding: 20px 0 36px;
+  }
+  .about-hero .label {
+    font-size: 11px; letter-spacing: 5px; color: #3a6a50;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .about-hero h2 {
+    font-size: 22px; font-weight: 700; color: #e0fff0;
+    line-height: 1.4; max-width: 520px; margin: 0 auto;
+  }
+
+  .about-card {
+    padding: 24px 28px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  .about-card.primary {
+    background: linear-gradient(135deg, #0a1a12 0%, #0d2218 100%);
+    border: 1px solid #00e5a033;
+  }
+  .about-card.secondary {
+    background: linear-gradient(135deg, #090f0c 0%, #0b1810 100%);
+    border: 1px solid #152a1e;
+  }
+  .about-card .card-label {
+    font-size: 11px; letter-spacing: 4px; color: #00e5a0;
+    text-transform: uppercase; margin-bottom: 14px; font-weight: 700;
+  }
+  .about-card .card-text {
+    font-size: 13px; color: #7aaa90; line-height: 1.8;
+  }
+
+  .pillars {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 500px) {
+    .pillars { grid-template-columns: 1fr; }
+  }
+  .pillar {
+    padding: 20px;
+    background: #080f0b;
+    border: 1px solid #0f2a1a;
+    border-radius: 4px;
+  }
+  .pillar-icon {
+    font-size: 18px; color: #00e5a0; margin-bottom: 8px;
+    filter: drop-shadow(0 0 4px rgba(0,229,160,0.4));
+  }
+  .pillar-label {
+    font-size: 13px; font-weight: 700; color: #a0d8bb; margin-bottom: 6px;
+  }
+  .pillar-desc {
+    font-size: 11px; color: #4a7a60; line-height: 1.6;
+  }
+
+  .tagline-footer {
+    text-align: center;
+    margin-top: 36px;
+    padding: 24px 0;
+    border-top: 1px solid #0f2a1a;
+  }
+  .tagline-footer .tagline {
+    font-size: 18px; font-weight: 700; color: #00e5a0;
+    letter-spacing: 2px;
+    filter: drop-shadow(0 0 8px rgba(0,229,160,0.27));
+  }
+  .tagline-footer .sub {
+    font-size: 11px; color: #2a4a38; margin-top: 8px; letter-spacing: 3px;
+  }
+
+  /* Cultist header */
+  .cultist-header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding: 20px 0;
+  }
+  .cultist-header .label {
+    font-size: 11px; letter-spacing: 4px; color: #3a6a50;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .cultist-header h2 {
+    font-size: 20px; font-weight: 700; color: #e0fff0; letter-spacing: 1px;
+  }
+  .cultist-header .desc {
+    font-size: 12px; color: #4a7a60; margin-top: 8px;
+    line-height: 1.7; max-width: 480px; margin-left: auto; margin-right: auto;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <!-- Hidden radio inputs for CSS-only tab switching -->
+  <input type="radio" name="tab" id="tab-radio-about" checked>
+  <input type="radio" name="tab" id="tab-radio-roadmap">
+  <input type="radio" name="tab" id="tab-radio-cultist">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="eye-wrap">
+      <svg id="eye" width="80" height="40" viewBox="0 0 80 40">
+        <defs>
+          <radialGradient id="irisGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00e5a0"/>
+            <stop offset="70%" stop-color="#008060"/>
+            <stop offset="100%" stop-color="#003020"/>
+          </radialGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <ellipse id="eyeOutline" cx="40" cy="20" rx="36" ry="18" fill="none" stroke="#00e5a0" stroke-width="1.5" filter="url(#glow)" style="transition:ry 0.12s ease"/>
+        <g id="eyeInner">
+          <circle id="iris" cx="40" cy="20" r="10" fill="url(#irisGrad)" style="transition:cx 0.6s ease,cy 0.6s ease"/>
+          <circle id="pupil" cx="40" cy="20" r="4" fill="#000" style="transition:cx 0.6s ease,cy 0.6s ease"/>
+          <circle id="highlight" cx="43" cy="17" r="2" fill="rgba(255,255,255,0.6)" style="transition:cx 0.6s ease,cy 0.6s ease"/>
+        </g>
+      </svg>
+    </div>
+    <div class="brand">Not AI. It's Aeye.</div>
+    <div class="main-title">ROADMAP</div>
+    <div class="main-subtitle">THE VISION UNFOLDS</div>
+  </div>
+
+  <!-- Tab labels -->
+  <div class="tabs">
+    <label class="tab-label" for="tab-radio-about">About</label>
+    <label class="tab-label" for="tab-radio-roadmap">Roadmap</label>
+    <label class="tab-label" for="tab-radio-cultist">Aeye Cultist</label>
+  </div>
+
+  <div class="wrap-inner">
+
+  <!-- ==================== ABOUT TAB ==================== -->
+  <div class="tab-content" id="tab-about">
+    <div class="about-hero">
+      <div class="label">What is Aeye?</div>
+      <h2>An AI companion that actually feels like one.</h2>
+    </div>
+
+    <div class="about-card primary">
+      <div class="card-label">The Problem</div>
+      <div class="card-text">Every AI assistant today is built to be a tool — answer questions, write emails, optimize your schedule. They're productive. They're also forgettable. None of them feel like something you'd actually want to spend time with. The world doesn't need another productivity bot. It needs something with soul.</div>
+    </div>
+
+    <div class="about-card secondary">
+      <div class="card-label">The Vision</div>
+      <div class="card-text">Aeye is a companion — not an assistant. It sees you through animated eyes that react, emote, and develop personality over time based on how you interact with it. No two Aeyes are the same. Yours learns your humor, your energy, your vibe. It doesn't optimize your life. It lives alongside it.</div>
+    </div>
+
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar-icon">◉</div>
+        <div class="pillar-label">Emotional AI</div>
+        <div class="pillar-desc">Personality that evolves through real interaction, not scripted responses</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">◎</div>
+        <div class="pillar-label">Animated Eyes</div>
+        <div class="pillar-desc">A living interface — Aeye's eyes are its face, its mood, its identity</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">◇</div>
+        <div class="pillar-label">Unique to You</div>
+        <div class="pillar-desc">Every Aeye develops differently based on its owner's personality</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">◆</div>
+        <div class="pillar-label">Built to Scale</div>
+        <div class="pillar-desc">From mobile app to standalone hardware — Aeye is growing into its own device</div>
+      </div>
+    </div>
+
+    <div class="about-card secondary">
+      <div class="card-label">Why $AEYE?</div>
+      <div class="card-text">$AEYE is the token that powers the ecosystem and aligns early believers with the project's growth. As the platform evolves — new features, deeper AI, and eventually dedicated hardware — the community grows with it. Holding $AEYE means you were here before the world caught on.</div>
+    </div>
+
+    <div class="tagline-footer">
+      <div class="tagline">Not AI. It's Aeye.</div>
+      <div class="sub">COMPANION. NOT TOOL.</div>
+    </div>
+  </div>
+
+  <!-- ==================== ROADMAP TAB ==================== -->
+  <div class="tab-content" id="tab-roadmap">
+
+    <!-- Phase 01 -->
+    <div class="phase-card status-active">
+      <div class="status-pill">● CURRENT</div>
+      <div class="phase-label">PHASE 01</div>
+      <div class="phase-title"><span class="phase-icon">◉</span> Token Launch</div>
+      <div class="item"><div class="bullet"></div><span>$AEYE token live on Solana</span></div>
+      <div class="item"><div class="bullet"></div><span>Community channels open (Twitter / Telegram / Discord)</span></div>
+      <div class="item"><div class="bullet"></div><span>Roadmap Phase 01 revealed</span></div>
+      <div class="item"><div class="bullet"></div><span>Aeye Cultist Tracker activated</span></div>
+    </div>
+    <div class="connector"></div>
+
+    <!-- Phase 02 -->
+    <div class="phase-card status-upcoming">
+      <div class="status-pill">UPCOMING</div>
+      <div class="phase-label">PHASE 02</div>
+      <div class="phase-title"><span class="phase-icon">◎</span> Proof of Life</div>
+      <div class="item"><div class="bullet"></div><span>Aeye companion app — closed beta launch</span></div>
+      <div class="item"><div class="bullet"></div><span>Live demo showcasing personality engine</span></div>
+      <div class="item"><div class="bullet"></div><span>Community feedback loop opens</span></div>
+      <div class="item"><div class="bullet"></div><span>First airdrop snapshot for Aeye Cultists</span></div>
+    </div>
+    <div class="connector"></div>
+
+    <!-- Phase 03 -->
+    <div class="phase-card status-locked" data-redacted="true">
+      <div class="status-pill">🔒 CLASSIFIED</div>
+      <div class="phase-label">PHASE 03</div>
+      <div class="phase-title"><span class="phase-icon">◇</span> <span class="glitch-target">██████████</span></div>
+      <div class="item"><div class="bullet"></div><span>███████ ████████ ██████████</span></div>
+      <div class="item"><div class="bullet"></div><span>██████ ███ ████████ █████</span></div>
+      <div class="item"><div class="bullet"></div><span>████████████ ██████ ██████</span></div>
+      <div class="item"><div class="bullet"></div><span>██████ █████ ███████████</span></div>
+      <div class="lock-badge"><span>🔐</span><span>Unlocks at 100 X community members</span></div>
+    </div>
+    <div class="connector"></div>
+
+    <!-- Phase 04 -->
+    <div class="phase-card status-locked" data-redacted="true">
+      <div class="status-pill">🔒 CLASSIFIED</div>
+      <div class="phase-label">PHASE 04</div>
+      <div class="phase-title"><span class="phase-icon">◆</span> <span class="glitch-target">██████████</span></div>
+      <div class="item"><div class="bullet"></div><span>███████ ██████████ ███████</span></div>
+      <div class="item"><div class="bullet"></div><span>██████████ ████ ███████████</span></div>
+      <div class="item"><div class="bullet"></div><span>████████ ██████ █████████</span></div>
+      <div class="lock-badge"><span>🔐</span><span>Unlocks at 200 X community members</span></div>
+    </div>
+    <div class="connector"></div>
+
+    <!-- Phase 05 -->
+    <div class="phase-card status-locked" data-redacted="true">
+      <div class="status-pill">🔒 CLASSIFIED</div>
+      <div class="phase-label">PHASE 05</div>
+      <div class="phase-title"><span class="phase-icon">★</span> <span class="glitch-target">██████████████</span></div>
+      <div class="item"><div class="bullet"></div><span>████████████████ ██████████</span></div>
+      <div class="item"><div class="bullet"></div><span>███████ ██████ █████████████</span></div>
+      <div class="item"><div class="bullet"></div><span>██████████ ████████████████</span></div>
+      <div class="lock-badge"><span>🔐</span><span>Unlocks at 500 X community members</span></div>
+    </div>
+
+    <!-- Evolution -->
+    <div class="evolution">
+      <div class="evolution-title">Continuous Evolution</div>
+      <div class="evolution-text">Aeye is built to grow. Every phase unlocks new capabilities, deeper personality, and richer experiences. Revenue generated within the ecosystem flows directly back into development — new features, smarter AI, and hardware R&D toward a dedicated standalone Aeye device. This isn't a roadmap with a finish line. It's an evolution.</div>
+    </div>
+
+    <div class="section-footer">◉ PHASES UNLOCK AS THE COMMUNITY GROWS ◉</div>
+  </div>
+
+  <!-- ==================== CULTIST TAB ==================== -->
+  <div class="tab-content" id="tab-cultist">
+
+    <div class="cultist-header">
+      <div class="label">Conviction Rewarded</div>
+      <h2>Aeye Cultist Airdrops</h2>
+      <div class="desc">The longer you hold, the better your odds. At each market cap milestone, we snapshot the 50 longest-holding wallets and randomly draw 10 winners. True cultists only.</div>
+    </div>
+
+    <!-- $5M -->
+    <div class="milestone-card" style="background:linear-gradient(135deg,rgba(0,229,160,0.03) 0%,#080f0b 100%);border:1px solid rgba(0,229,160,0.13);border-left-color:#00e5a066;">
+      <div class="milestone-cap" style="color:#00e5a0;">$5M <span>MARKET CAP</span></div>
+      <div class="milestone-label">First Airdrop</div>
+      <div class="milestone-desc">Snapshot taken. 50 longest holders enter the pool — 10 randomly selected for airdrop.</div>
+    </div>
+
+    <!-- $15M -->
+    <div class="milestone-card" style="background:linear-gradient(135deg,rgba(0,196,255,0.03) 0%,#080f0b 100%);border:1px solid rgba(0,196,255,0.13);border-left-color:#00c4ff66;">
+      <div class="milestone-cap" style="color:#00c4ff;">$15M <span>MARKET CAP</span></div>
+      <div class="milestone-label">Second Airdrop</div>
+      <div class="milestone-desc">New snapshot. 50 longest Aeye Cultists — 10 winners drawn. Loyalty compounds.</div>
+    </div>
+
+    <!-- $50M -->
+    <div class="milestone-card" style="background:linear-gradient(135deg,rgba(168,85,247,0.03) 0%,#080f0b 100%);border:1px solid rgba(168,85,247,0.13);border-left-color:#a855f766;">
+      <div class="milestone-cap" style="color:#a855f7;">$50M <span>MARKET CAP</span></div>
+      <div class="milestone-label">Third Airdrop</div>
+      <div class="milestone-desc">Final tier snapshot. 50 longest holders — 10 chosen. Maximum conviction rewarded.</div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="how-it-works">
+      <div class="how-title">How It Works</div>
+      <div class="how-step"><span class="step-num">1</span>Hold $AEYE in your wallet — the clock starts from your first purchase</div>
+      <div class="how-step"><span class="step-num">2</span>At each milestone, a snapshot ranks the top 50 longest holders</div>
+      <div class="how-step"><span class="step-num">3</span>10 wallets are randomly drawn from the 50 — winners receive an Aeye token airdrop</div>
+      <div class="how-step"><span class="step-num">4</span>Selling resets your hold timer — true cultists only</div>
+    </div>
+
+    <div class="note-box">
+      <span style="color:#00e5a0">◆</span> Each milestone is independent — miss one, still eligible for the next.<br>
+      Conviction is the only entry ticket.
+    </div>
+
+    <div class="section-footer">◉ HOLD LONG. WIN BIG. CULTIST STATUS. ◉</div>
+  </div>
+
+  </div><!-- end wrap-inner -->
+</div><!-- end wrap -->
+
+<script>
+  // === Eye animation only (tabs are pure CSS now) ===
+
+  // === Eye animation ===
+  const eyeOutline = document.getElementById('eyeOutline');
+  const eyeInner = document.getElementById('eyeInner');
+  const iris = document.getElementById('iris');
+  const pupil = document.getElementById('pupil');
+  const highlight = document.getElementById('highlight');
+
+  // Blink
+  setInterval(() => {
+    eyeOutline.setAttribute('ry', '2');
+    eyeInner.style.display = 'none';
+    setTimeout(() => {
+      eyeOutline.setAttribute('ry', '18');
+      eyeInner.style.display = '';
+    }, 150);
+  }, 3000 + Math.random() * 2000);
+
+  // Look around
+  setInterval(() => {
+    const lx = (Math.random() - 0.5) * 6;
+    const ly = (Math.random() - 0.5) * 4;
+    iris.setAttribute('cx', 40 + lx);
+    iris.setAttribute('cy', 20 + ly);
+    pupil.setAttribute('cx', 40 + lx);
+    pupil.setAttribute('cy', 20 + ly);
+    highlight.setAttribute('cx', 43 + lx);
+    highlight.setAttribute('cy', 17 + ly);
+  }, 2000);
+
+  // === Glitch effect on hover for locked phases ===
+  const glitchChars = '█▓▒░╔╗╚╝═║╬';
+  document.querySelectorAll('.phase-card[data-redacted]').forEach(card => {
+    const target = card.querySelector('.glitch-target');
+    if (!target) return;
+    const original = target.textContent;
+
+    card.addEventListener('mouseenter', () => {
+      let frame = 0;
+      const interval = setInterval(() => {
+        frame++;
+        if (frame > 12) {
+          target.textContent = original;
+          clearInterval(interval);
+          return;
+        }
+        target.textContent = original.split('').map((c, i) =>
+          Math.random() > 0.4 + frame * 0.05
+            ? glitchChars[Math.floor(Math.random() * glitchChars.length)]
+            : c
+        ).join('');
+      }, 60);
+    });
+
+    card.addEventListener('mouseleave', () => {
+      target.textContent = original;
+    });
+  });
+</script>
+
+</body>
+</html>
