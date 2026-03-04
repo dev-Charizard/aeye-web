@@ -104,7 +104,7 @@ body::after {
 /* ─── NAV ─────────────────────────────────────────────── */
 nav {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 36px; left: 0; right: 0;
   z-index: 100;
   background: rgba(5,10,8,0.9);
   backdrop-filter: blur(12px);
@@ -197,7 +197,7 @@ nav {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 80px 24px 60px;
+  padding: 116px 24px 60px;
   position: relative;
   overflow: hidden;
 }
@@ -880,6 +880,44 @@ footer {
   text-align: right;
 }
 
+/* ─── LAUNCH BANNER ─────────────────────────────────────────────── */
+.launch-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 101;
+  height: 36px;
+  background: #020604;
+  border-bottom: 1px solid var(--green-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.launch-banner-label {
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.launch-banner-time {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 4px;
+  font-variant-numeric: tabular-nums;
+  filter: drop-shadow(0 0 8px rgba(0,229,160,0.5));
+  animation: pulse 2s ease infinite;
+}
+.launch-banner-sep {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+}
+@media (max-width: 480px) {
+  .launch-banner-label { display: none; }
+  .launch-banner-sep { display: none; }
+}
+
 /* ─── SCROLL REVEAL ─────────────────────────────────────────────── */
 .reveal {
   opacity: 0;
@@ -901,6 +939,14 @@ footer {
 </style>
 </head>
 <body>
+
+<!-- ────────────────────────── LAUNCH BANNER ────────────────────────── -->
+<div class="launch-banner">
+  <span class="launch-banner-label">[ Transmission begins in ]</span>
+  <span class="launch-banner-time" id="countdown-time">24 : 00 : 00</span>
+  <span class="launch-banner-sep">///</span>
+  <span class="launch-banner-label">Aeye awakens</span>
+</div>
 
 <!-- ────────────────────────── NAV ────────────────────────── -->
 <nav>
@@ -1104,7 +1150,7 @@ footer {
           <div class="phase-name">◉ Token Launch</div>
           <div class="phase-items">
             <div class="phase-item"><div class="phase-bullet"></div><span>$AEYE token live on Solana</span></div>
-            <div class="phase-item"><div class="phase-bullet"></div><span>Community channels open (Twitter / Telegram / Discord)</span></div>
+            <div class="phase-item"><div class="phase-bullet"></div><span>Community channels open (Twitter / X)</span></div>
             <div class="phase-item"><div class="phase-bullet"></div><span>Roadmap Phase 01 revealed</span></div>
             <div class="phase-item"><div class="phase-bullet"></div><span>Aeye Cultist Tracker activated</span></div>
           </div>
@@ -1281,9 +1327,7 @@ footer {
       </div>
     </div>
     <div class="token-links">
-      <a href="#" class="token-link" id="link-twitter"><span class="icon">𝕏</span> Twitter</a>
-      <a href="#" class="token-link" id="link-telegram"><span class="icon">✈</span> Telegram</a>
-      <a href="#" class="token-link" id="link-discord"><span class="icon">◈</span> Discord</a>
+      <a href="https://x.com/AeyenotAI" class="token-link" id="link-twitter" target="_blank" rel="noopener noreferrer"><span class="icon">𝕏</span> Twitter</a>
       <a href="#" class="token-link" id="link-dexscreener"><span class="icon">◉</span> DexScreener</a>
       <a href="#" class="token-link" id="link-raydium"><span class="icon">◎</span> Buy $AEYE</a>
     </div>
@@ -1320,9 +1364,7 @@ footer {
       </div>
       <div class="footer-col">
         <div class="footer-col-title">Community</div>
-        <a href="#">Twitter / X</a>
-        <a href="#">Telegram</a>
-        <a href="#">Discord</a>
+        <a href="https://x.com/AeyenotAI" target="_blank" rel="noopener noreferrer">Twitter / X</a>
       </div>
       <div class="footer-col">
         <div class="footer-col-title">Trade</div>
@@ -1421,6 +1463,41 @@ function toggleNav() {
   });
 
   els.forEach(el => observer.observe(el));
+})();
+
+// ── LAUNCH COUNTDOWN ──
+(function() {
+  const DURATION = 24 * 60 * 60 * 1000;
+  const key = 'aeye_launch_target';
+  let target = localStorage.getItem(key);
+  if (!target) {
+    target = Date.now() + DURATION;
+    localStorage.setItem(key, target);
+  } else {
+    target = parseInt(target, 10);
+  }
+
+  const timeEl = document.getElementById('countdown-time');
+  const labels = document.querySelectorAll('.launch-banner-label');
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function tick() {
+    const remaining = target - Date.now();
+    if (!timeEl) return;
+    if (remaining <= 0) {
+      timeEl.textContent = '00 : 00 : 00';
+      labels.forEach(l => { l.textContent = '[ Transmission Active ]'; });
+      return;
+    }
+    const h = Math.floor(remaining / 3600000);
+    const m = Math.floor((remaining % 3600000) / 60000);
+    const s = Math.floor((remaining % 60000) / 1000);
+    timeEl.textContent = pad(h) + ' : ' + pad(m) + ' : ' + pad(s);
+    setTimeout(tick, 1000);
+  }
+
+  tick();
 })();
 
 // ── ACTIVE NAV ON SCROLL ──
