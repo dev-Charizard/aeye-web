@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEYE // DEV STATUS</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00ff88;
+    --red: #ff3366;
+    --purple: #b44fff;
+    --cyan: #00eeff;
+    --bg: #050508;
+    --bg2: #0a0a12;
+    --bg3: #0f0f1a;
+    --border: #1a1a2e;
+    --text: #c8c8e0;
+    --text-dim: #606080;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+  body::before {
+    content:'';
+    position:fixed;
+    inset:0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+    pointer-events:none;
+    z-index:1000;
+  }
+  @keyframes flicker { 0%,100%{opacity:1} 92%{opacity:1} 93%{opacity:.85} 94%{opacity:1} 96%{opacity:.9} 97%{opacity:1} }
+  body { animation: flicker 8s infinite; }
+
+  .container { max-width:860px; margin:0 auto; padding:20px; }
+
+  .header {
+    display:flex; align-items:center; gap:20px;
+    padding:24px 0 16px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:28px;
+  }
+  .eye-wrap { position:relative; width:64px; height:64px; flex-shrink:0; }
+  .eye-outer {
+    width:64px; height:64px; border-radius:50%;
+    background: radial-gradient(circle at 40% 40%, #1a0030, #000);
+    border:2px solid var(--purple);
+    display:flex; align-items:center; justify-content:center;
+    position:relative; overflow:hidden;
+    box-shadow: 0 0 20px var(--purple), inset 0 0 20px rgba(180,79,255,0.3);
+    animation: eyePulse 4s ease-in-out infinite;
+  }
+  @keyframes eyePulse {
+    0%,100%{ box-shadow: 0 0 20px var(--purple), inset 0 0 20px rgba(180,79,255,0.3); }
+    50%{ box-shadow: 0 0 40px var(--purple), 0 0 80px rgba(180,79,255,0.2), inset 0 0 30px rgba(180,79,255,0.5); }
+  }
+  .eye-iris {
+    width:30px; height:38px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #9000ff, #3d0080, #000);
+    position:relative;
+    animation: eyeMove 6s ease-in-out infinite;
+  }
+  @keyframes eyeMove {
+    0%,100%{transform:translate(0,0)} 25%{transform:translate(3px,-2px)} 50%{transform:translate(-2px,3px)} 75%{transform:translate(2px,2px)}
+  }
+  .eye-pupil { width:12px; height:14px; border-radius:50%; background:#000; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); }
+  .eye-cross { position:absolute; inset:0; pointer-events:none; }
+  .eye-cross::before,.eye-cross::after { content:''; position:absolute; background:rgba(0,238,255,0.4); }
+  .eye-cross::before { width:1px; height:100%; left:50%; top:0; }
+  .eye-cross::after { height:1px; width:100%; top:50%; left:0; }
+
+  .header-text { flex:1; }
+  .logo {
+    font-family:'Orbitron',sans-serif; font-size:28px; font-weight:900;
+    letter-spacing:6px; color:#fff;
+    text-shadow: 0 0 20px var(--purple), 0 0 40px rgba(180,79,255,0.4);
+    line-height:1;
+  }
+  .logo span { color:var(--purple); }
+  .subtitle { font-family:'VT323',monospace; font-size:15px; color:var(--text-dim); letter-spacing:3px; margin-top:4px; }
+
+  @keyframes glitch {
+    0%,100%{text-shadow:0 0 20px var(--purple),0 0 40px rgba(180,79,255,0.4);transform:none}
+    20%{transform:translate(-2px,0);text-shadow:2px 0 var(--cyan),-2px 0 var(--red)}
+    40%{transform:translate(2px,0);text-shadow:-2px 0 var(--cyan),2px 0 var(--red)}
+    60%{transform:none}
+  }
+  .logo:hover { animation: glitch .3s step-end 3; cursor:default; }
+
+  .status-bar {
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--bg3); border:1px solid var(--border); border-radius:4px;
+    padding:16px 20px; margin-bottom:24px; position:relative; overflow:hidden;
+  }
+  .status-bar::before {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(90deg, transparent, rgba(0,255,136,0.03), transparent);
+    animation: sweep 4s linear infinite;
+  }
+  @keyframes sweep { from{transform:translateX(-100%)} to{transform:translateX(100%)} }
+
+  .live-indicator { display:flex; align-items:center; gap:12px; }
+  .live-dot {
+    width:12px; height:12px; border-radius:50%;
+    background:var(--green);
+    box-shadow: 0 0 12px var(--green), 0 0 24px rgba(0,255,136,0.4);
+    animation: livePulse 1.5s ease-in-out infinite;
+    transition: all .5s;
+  }
+  .live-dot.offline { background:var(--text-dim); box-shadow:none; animation:none; }
+  @keyframes livePulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.7} }
+  .live-label { font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700; letter-spacing:3px; color:var(--green); transition:color .5s; }
+  .live-label.offline { color:var(--text-dim); }
+  .live-sub { font-size:11px; color:var(--text-dim); margin-top:2px; letter-spacing:1px; }
+
+  .section-header {
+    font-family:'Orbitron',sans-serif; font-size:10px; letter-spacing:4px;
+    color:var(--text-dim); text-transform:uppercase; margin-bottom:12px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .section-header::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  .current-task {
+    background:var(--bg3); border:1px solid var(--border); border-left:3px solid var(--cyan);
+    border-radius:4px; padding:16px 20px; margin-bottom:24px;
+  }
+  .task-label { font-size:10px; letter-spacing:3px; color:var(--cyan); margin-bottom:6px; font-family:'Orbitron',sans-serif; }
+  .task-name { font-family:'VT323',monospace; font-size:26px; color:#fff; line-height:1.1; }
+  .task-meta { font-size:11px; color:var(--text-dim); margin-top:8px; letter-spacing:1px; }
+
+  .tasks-grid { display:flex; flex-direction:column; gap:12px; margin-bottom:28px; }
+  .task-row {
+    background:var(--bg3); border:1px solid var(--border); border-radius:4px;
+    padding:14px 18px; transition:border-color .3s;
+  }
+  .task-row:hover { border-color:rgba(180,79,255,0.4); }
+  .task-row-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .task-title { font-size:13px; letter-spacing:1px; color:#e0e0f0; }
+  .task-status { font-size:9px; letter-spacing:2px; padding:3px 8px; border-radius:2px; font-family:'Orbitron',sans-serif; font-weight:700; }
+  .status-active { background:rgba(0,255,136,0.12); color:var(--green); border:1px solid rgba(0,255,136,0.3); }
+  .status-done { background:rgba(0,238,255,0.08); color:var(--cyan); border:1px solid rgba(0,238,255,0.25); }
+  .status-queued { background:rgba(180,79,255,0.08); color:var(--purple); border:1px solid rgba(180,79,255,0.25); }
+  .status-blocked { background:rgba(255,51,102,0.08); color:var(--red); border:1px solid rgba(255,51,102,0.25); }
+  .progress-track { height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden; }
+  .progress-fill { height:100%; border-radius:2px; transition:width 1.5s cubic-bezier(0.16,1,0.3,1); }
+  .fill-active { background: linear-gradient(90deg, #00cc66, var(--green)); }
+  .fill-done { background: linear-gradient(90deg, #00aabb, var(--cyan)); }
+  .fill-queued { background: linear-gradient(90deg, #7700cc, var(--purple)); }
+  .progress-pct { font-size:11px; color:var(--text-dim); text-align:right; margin-top:5px; }
+
+  .phase-block { background:var(--bg3); border:1px solid var(--border); border-radius:4px; padding:16px 20px; margin-bottom:28px; }
+  .phase-label { font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:3px; color:var(--text-dim); margin-bottom:8px; }
+  .phase-title { font-family:'VT323',monospace; font-size:22px; color:var(--purple); margin-bottom:12px; }
+  .phase-bar-wrap { display:flex; gap:4px; }
+  .phase-segment { height:6px; flex:1; border-radius:3px; background:rgba(255,255,255,0.05); transition:background .6s; }
+  .phase-segment.lit { background:var(--purple); box-shadow:0 0 8px rgba(180,79,255,0.5); }
+
+  .transmission {
+    background:var(--bg3); border:1px solid var(--border); border-left:3px solid var(--purple);
+    border-radius:4px; padding:14px 18px; margin-bottom:28px;
+    font-family:'VT323',monospace; font-size:18px; color:var(--purple);
+    position:relative; overflow:hidden; min-height:60px;
+  }
+  .transmission::before {
+    content:'// TRANSMISSION //';
+    font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:3px;
+    color:var(--text-dim); display:block; margin-bottom:8px;
+  }
+  .type-cursor { display:inline-block; width:10px; height:18px; background:var(--purple); margin-left:2px; vertical-align:middle; animation:blink 1s step-end infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .footer { border-top:1px solid var(--border); padding:16px 0; display:flex; justify-content:space-between; align-items:center; font-size:10px; color:var(--text-dim); letter-spacing:2px; }
+  .footer-contract { font-family:'VT323',monospace; font-size:13px; color:var(--text-dim); }
+  .footer-contract span { color:var(--purple); }
+
+  .eye-outer.live-ring { animation: eyePulse 4s ease-in-out infinite, liveRing 2s ease-in-out infinite; }
+  @keyframes liveRing {
+    0%,100%{border-color:var(--purple)}
+    50%{border-color:var(--green); box-shadow:0 0 30px var(--green),inset 0 0 20px rgba(0,255,136,0.2)}
+  }
+
+  .loading { text-align:center; padding:60px; font-family:'VT323',monospace; font-size:24px; color:var(--text-dim); letter-spacing:4px; }
+
+  .edit-link {
+    position:fixed; bottom:20px; right:20px;
+    font-size:10px; letter-spacing:2px; color:var(--text-dim);
+    text-decoration:none; opacity:0.3; transition:opacity .3s;
+  }
+  .edit-link:hover { opacity:0.8; color:var(--purple); }
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="app"><div class="loading">// ESTABLISHING CONNECTION...</div></div>
+</div>
+<a href="/status/edit" class="edit-link">⚙</a>
+
+<script>
+let state = null;
+let typeTimer = null;
+
+async function loadState() {
+  try {
+    const res = await fetch('/api/state');
+    state = await res.json();
+    render();
+  } catch(e) {
+    document.getElementById('app').innerHTML = '<div class="loading">// SIGNAL LOST. RETRYING...</div>';
+    setTimeout(loadState, 3000);
+  }
+}
+
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="header">
+      <div class="eye-wrap">
+        <div class="eye-outer ${state.isLive ? 'live-ring' : ''}" id="eyeOuter">
+          <div class="eye-iris"><div class="eye-pupil"></div></div>
+          <div class="eye-cross"></div>
+        </div>
+      </div>
+      <div class="header-text">
+        <div class="logo">A<span>E</span>YE</div>
+        <div class="subtitle">// DEV STATUS TERMINAL //</div>
+      </div>
+      <div style="text-align:right">
+        <div id="clockDisplay" style="font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;color:var(--text-dim)"></div>
+        <div id="dateDisplay" style="font-size:10px;color:var(--text-dim);margin-top:3px;letter-spacing:1px"></div>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div class="live-indicator">
+        <div class="live-dot ${state.isLive ? '' : 'offline'}"></div>
+        <div>
+          <div class="live-label ${state.isLive ? '' : 'offline'}">${state.isLive ? 'VIBEY DEV IS LIVE' : 'VIBEY DEV IS OFFLINE'}</div>
+          <div class="live-sub">${state.isLive ? '// building in real time' : '// check back soon'}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header">CURRENT FOCUS</div>
+    <div class="current-task">
+      <div class="task-label">// ACTIVE BUILD //</div>
+      <div class="task-name">${state.currentFocus}</div>
+      <div class="task-meta">${state.currentFocusMeta}</div>
+    </div>
+
+    <div class="section-header">SPRINT TASKS</div>
+    <div class="tasks-grid">
+      ${state.tasks.map(t => {
+        const fillClass = t.status === 'done' ? 'fill-done' : t.status === 'active' ? 'fill-active' : 'fill-queued';
+        const statusClass = `status-${t.status}`;
+        return `
+          <div class="task-row">
+            <div class="task-row-header">
+              <div class="task-title">${t.name}</div>
+              <div class="task-status ${statusClass}">${t.status.toUpperCase()}</div>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill ${fillClass}" style="width:${t.pct}%"></div>
+            </div>
+            <div class="progress-pct">${t.pct}%</div>
+          </div>`;
+      }).join('')}
+    </div>
+
+    <div class="section-header">BUILD PHASE</div>
+    <div class="phase-block">
+      <div class="phase-label">// CURRENT PHASE //</div>
+      <div class="phase-title">${state.phase}</div>
+      <div class="phase-bar-wrap">
+        ${Array.from({length:20}, (_,i) => `<div class="phase-segment ${i < Math.round(state.phaseProgress/5) ? 'lit' : ''}"></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="section-header">LATEST TRANSMISSION</div>
+    <div class="transmission">
+      <span id="transmissionText"></span><span class="type-cursor"></span>
+    </div>
+
+    <div class="footer">
+      <div>$AEYE · SOLANA</div>
+      <div class="footer-contract">CA: <span>FPa8RuS6...vUpump</span></div>
+      <div>SIGNAL ACTIVE</div>
+    </div>
+  `;
+
+  updateClock();
+  setInterval(updateClock, 1000);
+  typeTransmission(state.transmission);
+}
+
+function updateClock() {
+  const now = new Date();
+  const c = document.getElementById('clockDisplay');
+  const d = document.getElementById('dateDisplay');
+  if (c) c.textContent = now.toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  if (d) d.textContent = now.toLocaleDateString('en-US', {year:'numeric', month:'short', day:'2-digit'}).toUpperCase();
+}
+
+function typeTransmission(msg) {
+  const el = document.getElementById('transmissionText');
+  if (!el) return;
+  el.textContent = '';
+  let i = 0;
+  clearInterval(typeTimer);
+  typeTimer = setInterval(() => {
+    el.textContent += msg[i];
+    i++;
+    if (i >= msg.length) clearInterval(typeTimer);
+  }, 35);
+}
+
+// Poll for updates every 30s
+loadState();
+setInterval(loadState, 30000);
+</script>
+</body>
+</html>
