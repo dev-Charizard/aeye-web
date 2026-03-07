@@ -1,5 +1,4 @@
-// api/state.js — GET current dashboard state
-import { kv } from '@vercel/kv';
+// api/state.js — dashboard state via Upstash REST API
 
 const DEFAULT_STATE = {
   isLive: true,
@@ -18,6 +17,32 @@ const DEFAULT_STATE = {
   ]
 };
 
+async function kvGet(key) {
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
+  if (!url || !token) return null;
+  const res = await fetch(`${url}/get/${key}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const data = await res.json();
+  return data.result ? JSON.parse(data.result) : null;
+}
+
+async function kvSet(key, value) {
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
+  if (!url || !token) throw new Error('KV not configured');
+  const res = await fetch(`${url}/set/${key}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(JSON.stringify(value))
+  });
+  return res.ok;
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -27,7 +52,7 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
-      const state = await kv.get('dashboard_state');
+      const state = await kvGet('dashboard_state');
       return res.status(200).json(state || DEFAULT_STATE);
     } catch (e) {
       return res.status(200).json(DEFAULT_STATE);
@@ -40,13 +65,13 @@ export default async function handler(req, res) {
     if (password !== process.env.DASHBOARD_PASSWORD) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-
     try {
       const body = req.body;
-      await kv.set('dashboard_state', body);
+      if (body._auth_check) return res.status(200).json({ ok: true });
+      await kvSet('dashboard_state', body);
       return res.status(200).json({ success: true });
     } catch (e) {
-      return res.status(500).json({ error: 'Failed to save state' });
+      return res.status(500).json({ error: e.message });
     }
   }
 
