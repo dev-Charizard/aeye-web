@@ -25,22 +25,30 @@ async function kvGet(key) {
     headers: { Authorization: `Bearer ${token}` }
   });
   const data = await res.json();
-  return data.result ? JSON.parse(data.result) : null;
+  if (data.result === null || data.result === undefined) return null;
+  // Upstash returns the raw stored string in data.result
+  try {
+    return JSON.parse(data.result);
+  } catch(e) {
+    return null;
+  }
 }
 
 async function kvSet(key, value) {
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
   if (!url || !token) throw new Error('KV not configured');
+  // Upstash REST: POST to /set/<key> with the value as the raw request body
   const res = await fetch(`${url}/set/${key}`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/octet-stream'
     },
-    body: JSON.stringify(JSON.stringify(value))
+    body: JSON.stringify(value)
   });
-  return res.ok;
+  if (!res.ok) throw new Error(`KV set failed: ${res.status}`);
+  return true;
 }
 
 export default async function handler(req, res) {
