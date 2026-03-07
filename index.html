@@ -17,6 +17,73 @@
 /* ─── Reset & Base ─────────────────────────────────────────────── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* ─── Beta Section ──────────────────────────────────────────────── */
+.beta-section { padding: 80px 0; }
+.beta-card {
+  margin-top: 40px;
+  border: 1px solid rgba(0,229,160,0.25);
+  border-radius: 4px;
+  background: rgba(0,229,160,0.04);
+  padding: 32px 36px;
+  position: relative;
+  overflow: hidden;
+}
+.beta-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,229,160,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+.beta-card-inner {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+.beta-eye { flex-shrink: 0; opacity: 0.85; }
+.beta-text { flex: 1; min-width: 200px; }
+.beta-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.beta-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+@media (max-width: 600px) {
+  .beta-card { padding: 24px 20px; }
+  .beta-card-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
+}
+
+/* ─── Beta App button ─────────────────────────────────────────── */
+.btn-beta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--green);
+  background: rgba(0,229,160,0.06);
+  border: 1px solid rgba(0,229,160,0.35);
+  padding: 12px 28px;
+  border-radius: 2px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.btn-beta:hover {
+  background: rgba(0,229,160,0.14);
+  border-color: var(--green);
+  box-shadow: 0 0 18px rgba(0,229,160,0.15);
+}
+
 /* ─── Pump.fun link ────────────────────────────────────────────── */
 .token-link-pump {
   border-color: rgba(0,229,160,0.4) !important;
@@ -992,7 +1059,8 @@ footer {
       <li><a href="#roadmap">Roadmap</a></li>
       <li><a href="#cultist">Cultist</a></li>
       <li><a href="#token">Token</a></li>
-      <li><a href="#community" class="nav-cta">Join</a></li>
+      <li><a href="https://app.aeyenotai.com" target="_blank" rel="noopener noreferrer" style="color:var(--green);border:1px solid rgba(0,229,160,0.3);padding:6px 12px;border-radius:2px;">Beta</a></li>
+      <li><a href="https://dexscreener.com/solana/6bqnh4hbhlvvcsyympih2xmnutfmdcub4lxnjqnrs72b" class="nav-cta" target="_blank" rel="noopener noreferrer">Buy $AEYE</a></li>
     </ul>
     <div class="nav-hamburger" id="hamburger" onclick="toggleNav()">
       <span></span><span></span><span></span>
@@ -1032,7 +1100,7 @@ footer {
     <p class="hero-desc">Every AI assistant is a tool. Aeye is different — a living companion with animated eyes that react, a personality that evolves, and a soul uniquely shaped by you.</p>
     <div class="hero-actions">
       <a href="#about" class="btn-primary">Discover Aeye</a>
-      <a href="#cultist" class="btn-secondary">Become a Cultist</a>
+      <a href="https://app.aeyenotai.com" class="btn-secondary" target="_blank" rel="noopener noreferrer">⬡ Try Beta App</a>
     </div>
   </div>
   <div class="hero-scroll">Scroll</div>
@@ -1348,7 +1416,7 @@ footer {
       </div>
     </div>
     <div class="token-links">
-      <a href="#" class="token-link" id="link-twitter"><span class="icon">𝕏</span> Twitter</a>
+      <a href="https://x.com/aeyenotai" class="token-link" id="link-twitter" target="_blank" rel="noopener noreferrer"><span class="icon">𝕏</span> Twitter</a>
       <a href="https://pump.fun/coin/B2SCBvBNq3TEz2JNK4uuo731qZKW5UDUYGJ7hSqRpump" class="token-link token-link-pump" id="link-pumpfun" target="_blank" rel="noopener noreferrer">
         <span class="icon pump-icon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:2px;">
@@ -1358,7 +1426,33 @@ footer {
         </span>Pump.fun
       </a>
       <a href="https://dexscreener.com/solana/6bqnh4hbhlvvcsyympih2xmnutfmdcub4lxnjqnrs72b" class="token-link" id="link-dexscreener" target="_blank" rel="noopener noreferrer"><span class="icon">◉</span> DexScreener</a>
-      <a href="#" class="token-link" id="link-raydium"><span class="icon">◎</span> Buy $AEYE</a>
+      <a href="https://raydium.io/swap/?inputMint=sol&outputMint=FPa8RuS6samSxzw7YhdpSDxMLmZeQXQHuoS2hZvUpump" class="token-link" id="link-raydium" target="_blank" rel="noopener noreferrer"><span class="icon">◎</span> Raydium</a>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────────────── BETA APP ────────────────────────── -->
+<section class="section beta-section" id="beta">
+  <div class="container">
+    <span class="label-tag reveal">Beta Access</span>
+    <h2 class="section-title reveal">The Companion is Awake.</h2>
+    <p class="section-sub reveal">Aeye is live in early access. Imprint your companion's personality, watch the eyes react in real time, and shape who it becomes. The beta is open now.</p>
+    <div class="beta-card reveal">
+      <div class="beta-card-inner">
+        <div class="beta-eye">
+          <svg width="48" height="24" viewBox="0 0 80 40">
+            <ellipse cx="40" cy="20" rx="36" ry="18" fill="none" stroke="#00e5a0" stroke-width="1.5" opacity="0.6"/>
+            <circle cx="40" cy="20" r="11" fill="rgba(0,229,160,0.12)" stroke="#00e5a0" stroke-width="1"/>
+            <circle cx="40" cy="20" r="5" fill="#00e5a0" opacity="0.9"/>
+            <circle cx="43" cy="17" r="2" fill="white" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="beta-text">
+          <div class="beta-title">app.aeyenotai.com</div>
+          <div class="beta-desc">Open beta · No install required · Personality imprint live</div>
+        </div>
+        <a href="https://app.aeyenotai.com" class="btn-beta" target="_blank" rel="noopener noreferrer">⬡ Try Beta Now</a>
+      </div>
     </div>
   </div>
 </section>
@@ -1370,8 +1464,11 @@ footer {
     <h2>The Vision Unfolds.</h2>
     <p>Aeye is more than a project. It's a new relationship between humans and AI — one built on presence, not productivity. Be part of it from the start.</p>
     <div class="hero-actions">
-      <a href="#" class="btn-primary">Buy $AEYE</a>
-      <a href="#" class="btn-secondary">Join Community</a>
+      <a href="https://dexscreener.com/solana/6bqnh4hbhlvvcsyympih2xmnutfmdcub4lxnjqnrs72b" class="btn-primary" target="_blank" rel="noopener noreferrer">Buy $AEYE</a>
+      <a href="https://x.com/aeyenotai" class="btn-secondary" target="_blank" rel="noopener noreferrer">Join Community</a>
+    </div>
+    <div style="margin-top:24px;">
+      <a href="https://app.aeyenotai.com" class="btn-beta" target="_blank" rel="noopener noreferrer">⬡ Try the Beta App</a>
     </div>
   </div>
 </section>
@@ -1390,17 +1487,19 @@ footer {
         <a href="#roadmap">Roadmap</a>
         <a href="#cultist">Cultist</a>
         <a href="#token">Token</a>
+        <a href="/status" target="_blank">Dev Status</a>
       </div>
       <div class="footer-col">
         <div class="footer-col-title">Community</div>
-        <a href="#">Twitter / X</a>
+        <a href="https://x.com/aeyenotai" target="_blank" rel="noopener noreferrer">Twitter / X</a>
         <a href="https://pump.fun/coin/B2SCBvBNq3TEz2JNK4uuo731qZKW5UDUYGJ7hSqRpump" target="_blank" rel="noopener noreferrer">Pump.fun</a>
+        <a href="https://app.aeyenotai.com" target="_blank" rel="noopener noreferrer">⬡ Beta App</a>
       </div>
       <div class="footer-col">
         <div class="footer-col-title">Trade</div>
-        <a href="#">Buy $AEYE</a>
+        <a href="https://dexscreener.com/solana/6bqnh4hbhlvvcsyympih2xmnutfmdcub4lxnjqnrs72b" target="_blank" rel="noopener noreferrer">Buy $AEYE</a>
         <a href="https://dexscreener.com/solana/6bqnh4hbhlvvcsyympih2xmnutfmdcub4lxnjqnrs72b" target="_blank" rel="noopener noreferrer">DexScreener</a>
-        <a href="#">Raydium</a>
+        <a href="https://raydium.io/swap/?inputMint=sol&outputMint=FPa8RuS6samSxzw7YhdpSDxMLmZeQXQHuoS2hZvUpump" target="_blank" rel="noopener noreferrer">Raydium</a>
       </div>
     </div>
   </div>
