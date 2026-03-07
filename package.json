@@ -1,0 +1,8 @@
+{
+  "name": "aeye-status",
+  "version": "1.0.0",
+  "description": "Aeye community dev dashboard",
+  "dependencies": {
+    "@vercel/kv": "^1.0.0"
+  }
+}
