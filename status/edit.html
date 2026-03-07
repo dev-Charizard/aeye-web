@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEYE // BUILDER MODE</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00ff88; --red: #ff3366;
+    --purple: #b44fff; --cyan: #00eeff;
+    --bg: #050508; --bg3: #0f0f1a;
+    --border: #1a1a2e; --text: #c8c8e0; --text-dim: #606080;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Share Tech Mono',monospace; min-height:100vh; cursor:crosshair; }
+  body::before {
+    content:''; position:fixed; inset:0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+    pointer-events:none; z-index:1000;
+  }
+
+  .container { max-width:680px; margin:0 auto; padding:30px 20px; }
+
+  /* LOGIN SCREEN */
+  #loginScreen {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh; gap:24px;
+  }
+  .login-eye {
+    width:80px; height:80px; border-radius:50%;
+    background: radial-gradient(circle at 40% 40%, #1a0030, #000);
+    border:2px solid var(--purple);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 0 30px var(--purple), inset 0 0 20px rgba(180,79,255,0.3);
+    animation: eyePulse 3s ease-in-out infinite;
+  }
+  @keyframes eyePulse {
+    0%,100%{box-shadow:0 0 30px var(--purple),inset 0 0 20px rgba(180,79,255,0.3)}
+    50%{box-shadow:0 0 60px var(--purple),0 0 100px rgba(180,79,255,0.2),inset 0 0 30px rgba(180,79,255,0.5)}
+  }
+  .login-iris { width:36px; height:46px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #9000ff, #3d0080, #000); }
+  .login-title { font-family:'Orbitron',sans-serif; font-size:20px; font-weight:900; letter-spacing:6px; color:#fff; text-shadow:0 0 20px var(--purple); }
+  .login-sub { font-family:'VT323',monospace; font-size:16px; color:var(--text-dim); letter-spacing:3px; }
+  .login-box { display:flex; flex-direction:column; gap:12px; width:100%; max-width:320px; }
+  .login-input {
+    width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:3px;
+    color:#fff; font-family:'Share Tech Mono',monospace; font-size:14px; padding:12px 16px;
+    outline:none; text-align:center; letter-spacing:4px; transition:border-color .3s;
+  }
+  .login-input:focus { border-color:var(--purple); box-shadow:0 0 10px rgba(180,79,255,0.2); }
+  .login-btn {
+    width:100%; background:rgba(180,79,255,0.15); border:1px solid var(--purple);
+    color:var(--purple); font-family:'Orbitron',sans-serif; font-size:11px; letter-spacing:4px;
+    padding:12px; border-radius:3px; cursor:pointer; transition:all .3s; text-transform:uppercase;
+  }
+  .login-btn:hover { background:rgba(180,79,255,0.3); box-shadow:0 0 20px rgba(180,79,255,0.3); }
+  .login-error { color:var(--red); font-size:11px; letter-spacing:2px; text-align:center; min-height:16px; }
+
+  /* EDITOR SCREEN */
+  #editorScreen { display:none; }
+
+  .page-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding-bottom:16px; border-bottom:1px solid var(--border); margin-bottom:28px;
+  }
+  .page-title { font-family:'Orbitron',sans-serif; font-size:14px; letter-spacing:4px; color:var(--purple); }
+
+  .view-link {
+    font-size:10px; letter-spacing:2px; color:var(--text-dim); text-decoration:none;
+    border:1px solid var(--border); padding:6px 12px; border-radius:3px; transition:all .3s;
+  }
+  .view-link:hover { border-color:var(--cyan); color:var(--cyan); }
+
+  .section { margin-bottom:28px; }
+  .section-title {
+    font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:4px; color:var(--text-dim);
+    margin-bottom:14px; display:flex; align-items:center; gap:12px;
+  }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  .field { margin-bottom:12px; }
+  .field-label { font-size:9px; letter-spacing:2px; color:var(--text-dim); margin-bottom:5px; text-transform:uppercase; }
+  .field-input {
+    width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:3px;
+    color:#fff; font-family:'Share Tech Mono',monospace; font-size:12px; padding:9px 12px;
+    outline:none; transition:border-color .3s;
+  }
+  .field-input:focus { border-color:var(--purple); }
+
+  /* Live toggle */
+  .live-toggle-row { display:flex; align-items:center; justify-content:space-between; background:var(--bg3); border:1px solid var(--border); border-radius:4px; padding:14px 16px; }
+  .live-toggle-label { font-size:12px; letter-spacing:2px; }
+  .toggle-switch { position:relative; width:52px; height:26px; }
+  .toggle-switch input { opacity:0; width:0; height:0; }
+  .toggle-slider {
+    position:absolute; inset:0; background:#1a1a2e; border-radius:26px;
+    cursor:pointer; transition:.3s; border:1px solid var(--border);
+  }
+  .toggle-slider::before {
+    content:''; position:absolute; height:18px; width:18px; left:3px; bottom:3px;
+    background:var(--text-dim); border-radius:50%; transition:.3s;
+  }
+  input:checked + .toggle-slider { background:rgba(0,255,136,0.15); border-color:var(--green); }
+  input:checked + .toggle-slider::before { transform:translateX(26px); background:var(--green); box-shadow:0 0 8px var(--green); }
+
+  /* Phase slider */
+  .phase-slider { width:100%; accent-color:var(--purple); cursor:pointer; margin-top:4px; }
+  .phase-val { font-family:'VT323',monospace; font-size:20px; color:var(--purple); }
+
+  /* Tasks */
+  .task-editor-row {
+    display:grid; grid-template-columns:1fr 90px 60px 30px; gap:6px;
+    margin-bottom:6px; align-items:center;
+  }
+  .task-editor-row .field-input { font-size:11px; padding:7px 10px; }
+  select.field-input {
+    appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23606080'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 8px center; padding-right:24px;
+    background-color:var(--bg3);
+  }
+  .del-btn {
+    background:transparent; border:1px solid var(--border); color:var(--red);
+    font-size:14px; border-radius:3px; cursor:pointer; padding:0; height:32px;
+    transition:all .3s; display:flex; align-items:center; justify-content:center;
+  }
+  .del-btn:hover { border-color:var(--red); background:rgba(255,51,102,0.1); }
+
+  .add-task-btn {
+    background:transparent; border:1px dashed var(--border); color:var(--text-dim);
+    font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:2px;
+    padding:8px; width:100%; border-radius:3px; cursor:pointer; transition:all .3s;
+    text-transform:uppercase; margin-top:4px;
+  }
+  .add-task-btn:hover { border-color:var(--purple); color:var(--purple); }
+
+  /* Save button */
+  .save-btn {
+    width:100%; background:rgba(0,255,136,0.1); border:1px solid var(--green);
+    color:var(--green); font-family:'Orbitron',sans-serif; font-size:12px; letter-spacing:4px;
+    padding:14px; border-radius:3px; cursor:pointer; transition:all .3s; text-transform:uppercase;
+    margin-top:8px;
+  }
+  .save-btn:hover { background:rgba(0,255,136,0.2); box-shadow:0 0 20px rgba(0,255,136,0.3); }
+  .save-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+  .save-status { text-align:center; font-size:11px; letter-spacing:2px; margin-top:10px; min-height:16px; }
+  .save-ok { color:var(--green); }
+  .save-fail { color:var(--red); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-eye">
+    <div class="login-iris"></div>
+  </div>
+  <div class="login-title">AEYE</div>
+  <div class="login-sub">// BUILDER ACCESS //</div>
+  <div class="login-box">
+    <input class="login-input" type="password" id="pwInput" placeholder="ENTER PASSWORD" onkeydown="if(event.key==='Enter')tryLogin()">
+    <button class="login-btn" onclick="tryLogin()">ACCESS TERMINAL</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- EDITOR -->
+<div id="editorScreen">
+  <div class="container">
+    <div class="page-header">
+      <div class="page-title">// BUILDER MODE //</div>
+      <a href="/status" class="view-link">VIEW PUBLIC →</a>
+    </div>
+
+    <!-- LIVE STATUS -->
+    <div class="section">
+      <div class="section-title">LIVE STATUS</div>
+      <div class="live-toggle-row">
+        <div class="live-toggle-label">VIBEY DEV IS <span id="liveStatusLabel" style="color:var(--green)">LIVE</span></div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="liveToggle" checked onchange="updateLiveLabel()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- FOCUS -->
+    <div class="section">
+      <div class="section-title">CURRENT FOCUS</div>
+      <div class="field">
+        <div class="field-label">Task Name</div>
+        <input class="field-input" id="fFocus" type="text">
+      </div>
+      <div class="field">
+        <div class="field-label">Meta / Subtitle</div>
+        <input class="field-input" id="fFocusMeta" type="text">
+      </div>
+    </div>
+
+    <!-- TRANSMISSION -->
+    <div class="section">
+      <div class="section-title">TRANSMISSION MESSAGE</div>
+      <div class="field">
+        <input class="field-input" id="fTransmission" type="text">
+      </div>
+    </div>
+
+    <!-- PHASE -->
+    <div class="section">
+      <div class="section-title">BUILD PHASE</div>
+      <div class="field">
+        <div class="field-label">Phase Name</div>
+        <input class="field-input" id="fPhase" type="text">
+      </div>
+      <div class="field">
+        <div class="field-label">Phase Progress — <span class="phase-val" id="phaseValDisplay">60</span>%</div>
+        <input class="phase-slider" type="range" min="0" max="100" id="fPhaseRange" oninput="document.getElementById('phaseValDisplay').textContent=this.value">
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="section">
+      <div class="section-title">SPRINT TASKS</div>
+      <div id="taskRows"></div>
+      <button class="add-task-btn" onclick="addTask()">+ ADD TASK</button>
+    </div>
+
+    <button class="save-btn" id="saveBtn" onclick="saveState()">PUSH UPDATE TO COMMUNITY</button>
+    <div class="save-status" id="saveStatus"></div>
+  </div>
+</div>
+
+<script>
+let sessionToken = null;
+let tasks = [];
+
+// ---- LOGIN ----
+async function tryLogin() {
+  const pw = document.getElementById('pwInput').value;
+  const err = document.getElementById('loginError');
+  err.textContent = '// VERIFYING...';
+
+  try {
+    // Test password by attempting a POST with empty body
+    const res = await fetch('/api/state', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${pw}` },
+      body: JSON.stringify({ _auth_check: true })
+    });
+
+    if (res.status === 401) {
+      err.textContent = '// ACCESS DENIED';
+      return;
+    }
+
+    sessionToken = pw;
+    err.textContent = '';
+    await loadAndShow();
+  } catch(e) {
+    err.textContent = '// CONNECTION ERROR';
+  }
+}
+
+async function loadAndShow() {
+  const res = await fetch('/api/state');
+  const state = await res.json();
+
+  // Populate fields
+  document.getElementById('liveToggle').checked = state.isLive;
+  document.getElementById('fFocus').value = state.currentFocus;
+  document.getElementById('fFocusMeta').value = state.currentFocusMeta;
+  document.getElementById('fTransmission').value = state.transmission;
+  document.getElementById('fPhase').value = state.phase;
+  document.getElementById('fPhaseRange').value = state.phaseProgress;
+  document.getElementById('phaseValDisplay').textContent = state.phaseProgress;
+  tasks = state.tasks;
+  renderTaskRows();
+  updateLiveLabel();
+
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('editorScreen').style.display = 'block';
+}
+
+function updateLiveLabel() {
+  const isLive = document.getElementById('liveToggle').checked;
+  const label = document.getElementById('liveStatusLabel');
+  label.textContent = isLive ? 'LIVE' : 'OFFLINE';
+  label.style.color = isLive ? 'var(--green)' : 'var(--text-dim)';
+}
+
+// ---- TASKS ----
+function renderTaskRows() {
+  const el = document.getElementById('taskRows');
+  el.innerHTML = tasks.map((t, i) => `
+    <div class="task-editor-row">
+      <input class="field-input" id="tn${i}" value="${t.name}">
+      <select class="field-input" id="ts${i}">
+        <option ${t.status==='active'?'selected':''}>active</option>
+        <option ${t.status==='done'?'selected':''}>done</option>
+        <option ${t.status==='queued'?'selected':''}>queued</option>
+        <option ${t.status==='blocked'?'selected':''}>blocked</option>
+      </select>
+      <input class="field-input" id="tp${i}" type="number" min="0" max="100" value="${t.pct}">
+      <button class="del-btn" onclick="deleteTask(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function addTask() {
+  tasks.push({ name: 'New task', status: 'queued', pct: 0 });
+  renderTaskRows();
+}
+
+function deleteTask(i) {
+  tasks.splice(i, 1);
+  renderTaskRows();
+}
+
+function collectTasks() {
+  return tasks.map((_, i) => ({
+    name: document.getElementById(`tn${i}`)?.value || '',
+    status: document.getElementById(`ts${i}`)?.value || 'queued',
+    pct: parseInt(document.getElementById(`tp${i}`)?.value) || 0
+  }));
+}
+
+// ---- SAVE ----
+async function saveState() {
+  const btn = document.getElementById('saveBtn');
+  const status = document.getElementById('saveStatus');
+  btn.disabled = true;
+  status.textContent = '// TRANSMITTING...';
+  status.className = 'save-status';
+
+  const payload = {
+    isLive: document.getElementById('liveToggle').checked,
+    currentFocus: document.getElementById('fFocus').value,
+    currentFocusMeta: document.getElementById('fFocusMeta').value,
+    transmission: document.getElementById('fTransmission').value,
+    phase: document.getElementById('fPhase').value,
+    phaseProgress: parseInt(document.getElementById('fPhaseRange').value),
+    tasks: collectTasks()
+  };
+
+  try {
+    const res = await fetch('/api/state', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionToken}` },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      status.textContent = '// UPDATE TRANSMITTED SUCCESSFULLY';
+      status.className = 'save-status save-ok';
+    } else {
+      status.textContent = '// TRANSMISSION FAILED';
+      status.className = 'save-status save-fail';
+    }
+  } catch(e) {
+    status.textContent = '// CONNECTION ERROR';
+    status.className = 'save-status save-fail';
+  }
+
+  btn.disabled = false;
+  setTimeout(() => status.textContent = '', 4000);
+}
+</script>
+</body>
+</html>
